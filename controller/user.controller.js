@@ -3,9 +3,10 @@ const jwt = require("jsonwebtoken")
 const { userModel } = require("../models/user.model")
 const { winstonlogger } = require("../middleware/winston")
 const { redis } = require("../config/redis")
+require("dotenv").config()
 const REGISTER = async (req, res) => {
     try {
-        const hash = bcrypt.hashSync(req.body.pass, 3);
+        const hash = bcrypt.hashSync(req.body.pass, process.env.salt);
         if (hash) {
             req.body.pass = hash
         } else {
@@ -29,10 +30,10 @@ const LOGIN = async (req, res) => {
         }
         const resultpass = bcrypt.compareSync(req.body.pass, user.pass)
         if (resultpass) {
-            const token = jwt.sign({ user_id: user._id }, 'supper', { expiresIn: '1h' })
+            const token = jwt.sign({ user_id: user._id }, process.env.secretkey, { expiresIn: process.env.jwttime })
             await redis.set("token", token, "EX", 60 * 60)
             res.cookie("token", token, "expires", 60 * 60)
-            res.send({ "token": token })
+            res.send({ "token": "login successfully"})
         }
     } catch (error) {
         // winstonlogger.logger(error.message)

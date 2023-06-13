@@ -24,11 +24,6 @@ app.use(cookies())
 //         })
 //     ]
 // }))
-// app.get("/",(req,res)=>{
-//     throw error()
-//     res.status(404)
-// })
-
 
 app.use("/user", user)
 
